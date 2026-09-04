@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoli IPS - Konektivitas Antarruang</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-yellow: #FFD54F;
+            --accent-blue: #4FC3F7;
+            --accent-green: #81C784;
+            --accent-orange: #FF8A65;
+            --dark-blue: #0288D1;
+            --bg-color: #E0F7FA;
+            --card-bg: #FFFFFF;
+            --text-color: #263238;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid var(--dark-blue);
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: #01579B;
+            margin-bottom: 15px;
+        }
+
+        .header-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #B0BEC5;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            border-color: var(--dark-blue);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 10px;
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        .btn-yellow { background-color: var(--primary-yellow); color: #5D4037; }
+        .btn-blue { background-color: var(--accent-blue); color: #01579B; }
+        .btn-orange { background-color: var(--accent-orange); color: white; }
+        .btn-green { background-color: var(--accent-green); color: #1B5E20; }
+        .btn-danger { background-color: #E57373; color: white; }
+
+        /* Dashboard Game Mode */
+        .dashboard-card {
+            background: #E1F5FE;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px dashed var(--dark-blue);
+        }
+
+        .balance-label {
+            font-size: 0.9rem;
+            color: #0277BD;
+            font-weight: 600;
+        }
+
+        .balance-amount {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #2E7D32;
+        }
+
+        .game-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card-choice {
+            padding: 20px 10px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border: 3px solid rgba(0,0,0,0.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+        }
+
+        .card-kesempatan { background-color: #FFF9C4; color: #F57F17; }
+        .card-tantangan { background-color: #FFCCBC; color: #BF360C; }
+
+        /* Timer Badge */
+        .timer-badge {
+            background-color: #FF7043;
+            color: white;
+            font-weight: 700;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            float: right;
+        }
+
+        /* Question Box */
+        .question-box {
+            background: #F5F5F5;
+            border-left: 5px solid var(--dark-blue);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            line-height: 1.5;
+            clear: both;
+        }
+
+        .options-list {
+            list-style: none;
+        }
+
+        .options-list li {
+            margin-bottom: 10px;
+        }
+
+        .options-list label {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #ECEFF1;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .options-list input {
+            margin-right: 10px;
+        }
+
+        .badge-type {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- SCREEN 1: INPUT KELOMPOK -->
+    <div id="screen-setup" class="screen active">
+        <h1 class="header-title">🎮 Monopoli IPS Kelas VIII</h1>
+        <p style="text-align: center; margin-bottom: 20px; color: #546E7A;">Konektivitas Antarruang & Pengaruhnya</p>
+        
+        <div class="form-group">
+            <label for="group-name">Nama Kelompok:</label>
+            <input type="text" id="group-name" placeholder="Misal: Kelompok Nusantara">
+        </div>
+        
+        <div class="form-group">
+            <label for="member-names">Nama Anggota Kelompok (pisahkan dengan koma):</label>
+            <textarea id="member-names" rows="3" placeholder="Misal: Andi, Budi, Siti, Dewi"></textarea>
+        </div>
+
+        <button class="btn btn-yellow" onclick="startGame()">Masuk Game Mode 🚀</button>
+    </div>
+
+    <!-- SCREEN 2: DASHBOARD GAME MODE -->
+    <div id="screen-dashboard" class="screen">
+        <h2 id="display-group-name">Nama Kelompok</h2>
+        
+        <div class="dashboard-card">
+            <div class="balance-label">TOTAL UANG MONOPOLI</div>
+            <div class="balance-amount" id="display-balance">Rp 0</div>
+        </div>
+
+        <h3>Pilih Kartu Permainan:</h3>
+        <div class="game-options">
+            <div class="card-choice card-kesempatan" onclick="selectCardType('Kesempatan')">
+                <span>❓ KARTU KESEMPATAN</span>
+                <small style="font-weight: normal; font-size: 0.8rem; margin-top: 5px;">Soal Pilihan Ganda</small>
+            </div>
+            <div class="card-choice card-tantangan" onclick="selectCardType('Tantangan')">
+                <span>⚡ KARTU TANTANGAN</span>
+                <small style="font-weight: normal; font-size: 0.8rem; margin-top: 5px;">Soal Essai</small>
+            </div>
+        </div>
+
+        <button class="btn btn-danger" onclick="resetGame()" style="margin-top: 20px;">Selesaikan Permainan / Reset 🔄</button>
+    </div>
+
+    <!-- SCREEN 3: PILIH PEMAIN -->
+    <div id="screen-select-player" class="screen">
+        <h2>Siapa yang Menjawab?</h2>
+        <span class="badge-type" id="badge-card-type" style="background-color: var(--dark-blue);">Kartu</span>
+        
+        <div class="form-group" style="margin-top: 15px;">
+            <label for="select-player">Pilih Nama Anggota:</label>
+            <select id="select-player">
+                <!-- Option diisi dinamis oleh JS -->
+            </select>
+        </div>
+
+        <button class="btn btn-blue" onclick="openQuestion()">Buka Soal 📜</button>
+        <button class="btn btn-danger" onclick="goToDashboard()" style="background: none; color: #78909C; box-shadow: none;">Batal</button>
+    </div>
+
+    <!-- SCREEN 4: SOAL & ANSWER -->
+    <div id="screen-question" class="screen">
+        <div class="timer-badge">⏱️ <span id="timer-display">02:00</span></div>
+        <span class="badge-type" id="question-card-type" style="background-color: #000;">Tipe</span>
+        
+        <div style="clear: both;"></div>
+        
+        <div class="question-box" id="question-text">
+            Teks pertanyaan akan muncul di sini...
+        </div>
+
+        <!-- Container Jawab PG -->
+        <div id="container-pg" style="display: none;">
+            <ul class="options-list" id="pg-options">
+                <!-- Option PG diisi JS -->
+            </ul>
+        </div>
+
+        <!-- Container Jawab Essai -->
+        <div id="container-essai" style="display: none;">
+            <div class="form-group">
+                <label for="essai-answer">Jawaban Kamu:</label>
+                <textarea id="essai-answer" rows="4" placeholder="Tuliskan jawaban lengkap dengan bahasamu sendiri..."></textarea>
+            </div>
+        </div>
+
+        <button class="btn btn-green" onclick="submitAnswer()">Kirim Jawaban 📩</button>
+    </div>
+
+</div>
+
+<script>
+    // --- DATABASE SOAL ---
+    const dataKesempatanPG = [
+        { id: 1, q: "Perbedaan kondisi geografis antarwilayah dapat mendorong interaksi antarruang karena ....", options: ["A. Setiap wilayah dapat memenuhi seluruh kebutuhannya sendiri", "B. Tidak ada wilayah yang mampu memenuhi seluruh kebutuhannya secara mandiri", "C. Wilayah dengan kondisi sama tidak perlu berinteraksi", "D. Interaksi hanya terjadi antarwilayah yang identik", "E. Perbedaan wilayah menghambat terjadinya kerja sama"], key: "B" },
+        { id: 2, q: "Hubungan saling membutuhkan antara desa dan kota terjadi karena ....", options: ["A. Desa dan kota menghasilkan produk yang sama", "B. Desa menyediakan hasil pertanian, kota menyediakan barang industri dan jasa", "C. Kota tidak membutuhkan pasokan dari desa", "D. Desa tidak membutuhkan barang dari kota", "E. Interaksi hanya berlangsung satu arah dari kota ke desa"], key: "B" },
+        { id: 3, q: "Konektivitas antarruang berpengaruh positif terhadap perekonomian karena ....", options: ["A. Mempersempit jangkauan pasar", "B. Menutup peluang investasi antarwilayah", "C. Memperluas jangkauan pasar dan mempermudah arus distribusi barang", "D. Menghambat pertumbuhan lapangan kerja", "E. Mengurangi kegiatan perdagangan antarwilayah"], key: "C" },
+        { id: 4, q: "Dampak negatif terhadap lingkungan dapat muncul akibat pembangunan sarana konektivitas apabila ....", options: ["A. Pembangunan direncanakan dengan memperhatikan daya dukung lingkungan", "B. Pembangunan dilakukan tanpa perencanaan matang sehingga merusak lahan hijau", "C. Infrastruktur dibangun sesuai kebutuhan wilayah", "D. Masyarakat dilibatkan dalam proses perencanaan", "E. Pembangunan mempertimbangkan aspek keberlanjutan"], key: "B" },
+        { id: 5, q: "Konektivitas antarruang mendukung pemerataan pendidikan sebab ....", options: ["A. Membatasi siswa hanya mengakses sumber belajar di wilayahnya sendiri", "B. Memungkinkan siswa di berbagai wilayah mengakses pembelajaran daring dan sumber belajar dari luar daerah", "C. Menghapus kebutuhan akan sekolah tatap muka", "D. Hanya bermanfaat bagi wilayah yang sudah maju", "E. Menghambat pertukaran pengetahuan antarwilayah"], key: "B" },
+        { id: 6, q: "Peran konektivitas antarruang dalam bidang kesehatan adalah ....", options: ["A. Menghambat distribusi obat dan alat kesehatan", "B. Membatasi mobilitas tenaga medis antarwilayah", "C. Mempercepat distribusi obat, vaksin, serta mendukung pemerataan tenaga kesehatan", "D. Menutup layanan kesehatan jarak jauh", "E. Mengurangi akses masyarakat terhadap fasilitas kesehatan"], key: "C" },
+        { id: 7, q: "Perdagangan rempah pada masa pelayaran Nusantara berkembang pesat karena ....", options: ["A. Rempah tidak memiliki nilai jual tinggi", "B. Rempah menjadi komoditas bernilai tinggi yang menarik pedagang dari berbagai wilayah", "C. Pelabuhan Nusantara tertutup bagi pedagang asing", "D. Tidak ada permintaan rempah dari luar wilayah", "E. Kondisi geografis menghambat pelayaran sepenuhnya"], key: "B" },
+        { id: 8, q: "Pembangunan konektivitas yang berkelanjutan sebaiknya memperhatikan ....", options: ["A. Kepentingan ekonomi semata tanpa mempertimbangkan aspek lain", "B. Keseimbangan antara aspek ekonomi, sosial, dan lingkungan", "C. Pembangunan tanpa melibatkan partisipasi masyarakat", "D. Manfaat yang hanya dinikmati sebagian kelompok", "E. Percepatan pembangunan tanpa memperhitungkan dampak jangka panjang"], key: "B" },
+        { id: 9, q: "Daerah penghasil ikan di wilayah pesisir menjual hasil tangkapannya ke daerah pegunungan yang tidak memiliki laut, sementara daerah pegunungan mengirimkan sayuran ke wilayah pesisir. Contoh ini menunjukkan penerapan ....", options: ["A. Intervening opportunity", "B. Spatial transferability", "C. Regional complementary", "D. Urbanisasi", "E. Distribusi tunggal"], key: "C" },
+        { id: 10, q: "Siswa di daerah terpencil mengikuti kelas tambahan secara daring bersama guru dari kota besar. Kegiatan ini merupakan contoh konektivitas dalam bidang ....", options: ["A. Ekonomi", "B. Transportasi", "C. Pendidikan", "D. Kesehatan", "E. Lingkungan"], key: "C" },
+        { id: 11, q: "Sebuah pabrik tekstil menggunakan kapas dari daerah A, benang dipintal di daerah B, dan pakaian jadi dipasarkan ke berbagai kota. Rangkaian kegiatan ini menunjukkan penerapan konsep ....", options: ["A. Interaksi tanpa konektivitas", "B. Konektivitas antarruang dalam proses produksi", "C. Intervening opportunity semata", "D. Wilayah yang berdiri sendiri", "E. Spatial transferability yang terhambat"], key: "B" },
+        { id: 12, q: "Tingginya volume kendaraan yang melintasi jalur utama antarkota menyebabkan kemacetan dan peningkatan polusi udara. Contoh ini menunjukkan dampak negatif konektivitas pada aspek ....", options: ["A. Ekonomi", "B. Transportasi", "C. Pendidikan", "D. Sosial budaya", "E. Teknologi informasi"], key: "B" },
+        { id: 13, q: "Hasil panen kopi dari dataran tinggi diangkut menggunakan truk menuju kota untuk diekspor. Proses ini menunjukkan penerapan konsep ....", options: ["A. Interaksi antarruang yang didorong oleh perbedaan potensi wilayah", "B. Urbanisasi penduduk", "C. Dampak negatif konektivitas", "D. Kesenjangan akses digital", "E. Spatial transferability yang terhambat total"], key: "A" },
+        { id: 14, q: "Seorang pembeli awalnya berlangganan buah dari kota yang jauh, namun kemudian beralih membeli dari kebun buah di kota tetangga yang jaraknya lebih dekat dengan harga bersaing. Kondisi ini merupakan contoh penerapan ....", options: ["A. Regional complementary", "B. Intervening opportunity", "C. Spatial transferability", "D. Urbanisasi", "E. Regional distribution"], key: "B" },
+        { id: 15, q: "Perbaikan jalan dan penyediaan angkutan umum antarwilayah membuat waktu tempuh menjadi lebih singkat dan biaya lebih murah. Kondisi ini menunjukkan peningkatan ....", options: ["A. Regional complementary", "B. Intervening opportunity", "C. Spatial transferability", "D. Urbanisasi", "E. Distribusi barang"], key: "C" },
+        { id: 16, q: "Masuknya budaya kuliner dari daerah lain ke suatu kota akibat mudahnya akses transportasi dan komunikasi menunjukkan pengaruh konektivitas terhadap bidang ....", options: ["A. Ekonomi", "B. Sosial budaya", "C. Lingkungan", "D. Kesehatan", "E. Pertanian"], key: "B" },
+        { id: 17, q: "Wilayah X memiliki potensi hasil laut melimpah namun kekurangan bahan pangan pokok, sedangkan wilayah Y memiliki hasil pertanian melimpah namun tidak memiliki akses laut. Analisis yang tepat mengenai hubungan kedua wilayah tersebut adalah ....", options: ["A. Kedua wilayah tidak perlu berinteraksi karena kebutuhan berbeda", "B. Terjadi hubungan saling melengkapi (regional complementary) yang mendorong pertukaran hasil produksi", "C. Wilayah Y lebih diuntungkan karena memiliki hasil pertanian", "D. Interaksi antarwilayah hanya menguntungkan wilayah X", "E. Kedua wilayah akan bersaing memperebutkan sumber daya"], key: "B" },
+        { id: 18, q: "Sebuah kota semula memasok kebutuhan semen dari provinsi tetangga yang jauh, namun setelah ditemukan pabrik semen baru yang lebih dekat dengan harga bersaing, kota tersebut beralih memasok dari pabrik baru itu. Faktor yang paling tepat menjelaskan perubahan ini adalah ....", options: ["A. Regional complementary", "B. Intervening opportunity", "C. Spatial transferability", "D. Distribusi", "E. Urbanisasi"], key: "B" },
+        { id: 19, q: "Suatu wilayah pegunungan memiliki akses jalan yang buruk sehingga biaya angkut hasil pertanian menjadi tinggi dan sulit menjangkau pasar kota. Analisis paling tepat mengenai kondisi ini adalah ....", options: ["A. Regional complementary di wilayah tersebut sangat tinggi", "B. Spatial transferability wilayah tersebut rendah sehingga interaksi antarruang terhambat", "C. Wilayah tersebut tidak membutuhkan interaksi dengan kota", "D. Intervening opportunity menjadi satu-satunya faktor penghambat", "E. Kondisi ini tidak berkaitan dengan konektivitas antarruang"], key: "B" },
+        { id: 20, q: "Pembangunan pelabuhan baru mempercepat arus distribusi barang antarwilayah, tetapi menyebabkan reklamasi pantai yang merusak ekosistem mangrove di sekitarnya. Analisis paling tepat terhadap kasus ini adalah ....", options: ["A. Pembangunan pelabuhan hanya membawa dampak positif", "B. Peningkatan konektivitas dapat menimbulkan tekanan ekologis apabila tidak direncanakan secara berkelanjutan", "C. Kerusakan ekosistem tidak berkaitan dengan pembangunan infrastruktur", "D. Reklamasi pantai tidak memengaruhi ekosistem sekitar", "E. Distribusi barang tidak berhubungan dengan pembangunan pelabuhan"], key: "B" },
+        { id: 21, q: "Sebuah usaha kerajinan di desa terpencil mulai memasarkan produknya melalui marketplace daring dan menggunakan jasa ekspedisi untuk pengiriman ke berbagai kota. Analisis yang tepat mengenai fenomena ini adalah ....", options: ["A. Konektivitas ekonomi dan teknologi berperan bersama dalam memperluas pasar usaha tersebut", "B. Fenomena ini hanya terjadi karena regional complementary semata", "C. Konektivitas tidak berperan dalam perkembangan usaha kecil", "D. Usaha tersebut tidak membutuhkan sarana transportasi", "E. Pemasaran daring tidak memengaruhi jangkauan pasar"], key: "A" },
+        { id: 22, q: "Dua wilayah yang sebelumnya terisolasi kini terhubung oleh jembatan baru. Setelah pembangunan jembatan, harga kebutuhan pokok di kedua wilayah menjadi lebih stabil, namun jumlah penduduk yang berpindah ke kota meningkat tajam. Analisis paling tepat terhadap kondisi ini adalah ....", options: ["A. Konektivitas hanya berdampak pada stabilitas harga tanpa memengaruhi mobilitas penduduk", "B. Peningkatan konektivitas dapat mendorong stabilitas ekonomi sekaligus memicu perpindahan penduduk (urbanisasi)", "C. Pembangunan jembatan tidak berkaitan dengan pergerakan penduduk", "D. Harga kebutuhan pokok tidak dipengaruhi oleh konektivitas transportasi", "E. Urbanisasi terjadi tanpa hubungan dengan pembangunan infrastruktur"], key: "B" },
+        { id: 23, q: "Suatu wilayah yang belum memiliki jaringan internet memadai tertinggal dalam mengakses informasi pasar dibandingkan wilayah lain yang sudah terhubung dengan baik. Analisis paling tepat mengenai kesenjangan ini adalah ....", options: ["A. Konektivitas digital tidak berkaitan dengan kesenjangan ekonomi antarwilayah", "B. Keterbatasan infrastruktur digital dapat memperlebar kesenjangan ekonomi antarwilayah", "C. Semua wilayah memiliki akses informasi pasar yang setara", "D. Kesenjangan ini hanya disebabkan oleh faktor alam", "E. Infrastruktur digital tidak memengaruhi akses informasi pasar"], key: "B" },
+        { id: 24, q: "Sebuah kabupaten berencana membangun bandara baru di kawasan pesisir yang juga menjadi habitat penyu. Sikap paling tepat dalam menilai rencana tersebut adalah ....", options: ["A. Menyetujui pembangunan tanpa syarat karena manfaat ekonominya besar", "B. Menolak seluruh rencana pembangunan bandara di wilayah tersebut", "C. Mendukung pembangunan dengan syarat kajian lingkungan mendalam dan langkah mitigasi terhadap habitat penyu", "D. Membiarkan pembangunan berjalan tanpa kajian dampak lingkungan", "E. Menyerahkan keputusan sepenuhnya kepada investor"], key: "C" },
+        { id: 25, q: "Untuk mengurangi ketimpangan ekonomi akibat perbedaan tingkat konektivitas antarwilayah, langkah yang paling tepat dilakukan pemerintah adalah ....", options: ["A. Membiarkan wilayah tertinggal berkembang secara mandiri tanpa bantuan", "B. Memprioritaskan pembangunan infrastruktur di wilayah yang sudah maju", "C. Memberikan perhatian dan pembangunan infrastruktur yang lebih besar kepada wilayah tertinggal", "D. Menghentikan seluruh pembangunan infrastruktur antarwilayah", "E. Membangun infrastruktur secara merata tanpa mempertimbangkan kebutuhan wilayah"], key: "C" },
+        { id: 26, q: "Pernyataan 'semakin banyak wilayah yang saling terhubung, semakin cepat pula pertumbuhan ekonomi tanpa ada risiko apa pun' merupakan pernyataan yang ....", options: ["A. Benar sepenuhnya karena konektivitas tidak memiliki risiko", "B. Kurang tepat, karena peningkatan konektivitas juga berpotensi menimbulkan risiko sosial dan lingkungan", "C. Benar, karena semua wilayah pasti diuntungkan secara setara", "D. Kurang tepat, karena konektivitas hanya menguntungkan wilayah maju", "E. Benar, karena pertumbuhan ekonomi tidak berkaitan dengan risiko lingkungan"], key: "B" },
+        { id: 27, q: "Dalam kasus intervening opportunity, sebuah kota beralih membeli beras dari daerah yang lebih dekat meski kualitasnya sedikit lebih rendah dibandingkan daerah asal. Penilaian yang paling tepat terhadap keputusan tersebut adalah ....", options: ["A. Keputusan tidak rasional karena mengorbankan kualitas", "B. Keputusan tersebut rasional apabila pertimbangan efisiensi biaya dan waktu lebih menguntungkan secara keseluruhan", "C. Keputusan tersebut hanya menguntungkan daerah pemasok baru", "D. Keputusan tersebut seharusnya tidak dilakukan karena mengubah pola lama", "E. Keputusan ini tidak berkaitan dengan prinsip interaksi antarruang"], key: "B" },
+        { id: 28, q: "Beberapa daerah aliran sungai bekerja sama membangun sistem peringatan dini banjir dengan saling bertukar data curah hujan secara daring. Evaluasi paling tepat terhadap upaya tersebut adalah ....", options: ["A. Upaya ini tidak efektif karena bencana bersifat lokal", "B. Kerja sama antarwilayah melalui konektivitas informasi dapat menjadi solusi efektif dalam mitigasi bencana", "C. Pertukaran data hanya menguntungkan satu daerah", "D. Sistem peringatan dini tidak memerlukan kerja sama antarwilayah", "E. Konektivitas tidak relevan dengan mitigasi bencana"], key: "B" },
+        { id: 29, q: "Antara memprioritaskan pembangunan jalur kereta cepat antarkota besar atau memperbaiki jalan penghubung desa-desa terpencil dengan anggaran yang sama, pendekatan yang paling sesuai dengan prinsip pemerataan pembangunan adalah ....", options: ["A. Membangun kereta cepat karena dampak ekonominya lebih besar dan cepat terlihat", "B. Memperbaiki jalan desa terpencil agar kesenjangan akses antarwilayah dapat dikurangi terlebih dahulu", "C. Tidak membangun keduanya untuk menghemat anggaran", "D. Membangun keduanya secara acak tanpa kajian kebutuhan", "E. Menyerahkan keputusan sepenuhnya kepada investor swasta"], key: "B" },
+        { id: 30, q: "Kemajuan konektivitas digital mempermudah transaksi jual beli daring antarwilayah, tetapi juga meningkatkan risiko penipuan daring lintas daerah. Solusi paling tepat untuk mengatasi hal ini tanpa mengurangi manfaat konektivitas adalah ....", options: ["A. Melarang seluruh transaksi daring antarwilayah", "B. Membiarkan transaksi daring berjalan tanpa pengawasan", "C. Meningkatkan literasi digital masyarakat dan memperkuat sistem keamanan transaksi daring", "D. Menghentikan seluruh kegiatan e-commerce", "E. Menyerahkan sepenuhnya risiko kepada konsumen tanpa edukasi"], key: "C" }
+    ];
+
+    const dataTantanganEssai = [
+        { id: 1, q: "Jelaskan mengapa tidak ada satu wilayah pun yang dapat memenuhi seluruh kebutuhannya secara mandiri!" },
+        { id: 2, q: "Jelaskan bagaimana interaksi antara wilayah pesisir dan wilayah pegunungan dapat terjalin!" },
+        { id: 3, q: "Jelaskan pengaruh konektivitas antarruang terhadap perluasan pasar suatu produk!" },
+        { id: 4, q: "Jelaskan bagaimana pembangunan infrastruktur transportasi yang tidak terencana dapat merusak lingkungan!" },
+        { id: 5, q: "Jelaskan manfaat konektivitas antarruang bagi pemerataan pendidikan di wilayah terpencil!" },
+        { id: 6, q: "Jelaskan bagaimana konektivitas antarruang mendukung pemerataan layanan kesehatan!" },
+        { id: 7, q: "Jelaskan faktor yang menyebabkan pelabuhan-pelabuhan di Nusantara berkembang menjadi pusat perdagangan pada masa lalu!" },
+        { id: 8, q: "Jelaskan mengapa pembangunan konektivitas perlu memperhatikan aspek sosial dan lingkungan, tidak hanya ekonomi!" },
+        { id: 9, q: "Berikan contoh nyata penerapan regional complementary antara dua wilayah di Indonesia!" },
+        { id: 10, q: "Berikan contoh konektivitas antarruang dalam bidang kesehatan yang dapat ditemukan di lingkungan sekitarmu!" },
+        { id: 11, q: "Jelaskan bagaimana proses distribusi hasil pertanian dari desa ke pasar kota menunjukkan penerapan konektivitas antarruang!" },
+        { id: 12, q: "Berikan contoh dampak negatif konektivitas transportasi yang dapat kamu temui di sekitar tempat tinggalmu!" },
+        { id: 13, q: "Jelaskan penerapan konsep intervening opportunity dalam kegiatan jual beli sehari-hari melalui sebuah contoh!" },
+        { id: 14, q: "Berikan contoh penerapan konsep spatial transferability dalam kehidupan sehari-hari!" },
+        { id: 15, q: "Jelaskan bagaimana perkembangan aplikasi transportasi daring (ojek online) mencerminkan konektivitas antarruang!" },
+        { id: 16, q: "Berikan contoh pengaruh konektivitas antarruang terhadap perubahan budaya suatu daerah!" },
+        { id: 17, q: "Sebuah kota kekurangan pasokan ikan segar karena tidak memiliki wilayah pesisir, sementara kota tetangga memiliki hasil laut melimpah namun kekurangan hasil pertanian. Analisislah hubungan yang mungkin terjalin antara kedua kota tersebut!" },
+        { id: 18, q: "Suatu daerah pemasok bahan baku beralih menjual produknya ke pembeli baru yang menawarkan harga lebih tinggi meski jaraknya lebih jauh. Analisislah apakah kondisi ini termasuk intervening opportunity dan berikan alasannya!" },
+        { id: 19, q: "Sebuah desa memiliki potensi wisata alam yang besar namun akses jalannya masih berupa jalan tanah dan sulit dilalui kendaraan. Analisislah dampak kondisi tersebut terhadap perkembangan sektor pariwisata desa itu!" },
+        { id: 20, q: "Pembangunan kawasan industri baru meningkatkan lapangan kerja di suatu wilayah, tetapi menyebabkan peningkatan volume sampah dan pencemaran sungai di sekitarnya. Analisislah kasus ini berdasarkan konsep konektivitas antarruang!" },
+        { id: 21, q: "Analisislah mengapa wilayah yang memiliki akses pelabuhan cenderung berkembang lebih pesat dibandingkan wilayah yang tidak memiliki akses laut!" },
+        { id: 22, q: "Sebuah daerah wisata mengalami peningkatan kunjungan setelah dibangun jalan tol, tetapi harga tanah di sekitar kawasan tersebut melonjak tajam sehingga banyak penduduk asli menjual lahannya. Analisislah dampak konektivitas dalam kasus ini!" },
+        { id: 23, q: "Analisislah hubungan antara ketersediaan jaringan internet dengan tingkat partisipasi masyarakat dalam kegiatan ekonomi digital di suatu wilayah!" },
+        { id: 24, q: "Sebuah pemerintah kabupaten dihadapkan pada pilihan membangun jalur kereta barang yang akan melintasi lahan pertanian produktif demi mempercepat distribusi hasil industri. Berikan evaluasimu terhadap rencana tersebut!" },
+        { id: 25, q: "Evaluasilah kebijakan yang paling tepat untuk mendorong pemerataan konektivitas digital antara wilayah perkotaan dan wilayah tertinggal!" },
+        { id: 26, q: "Berikan penilaianmu terhadap pandangan yang menyatakan bahwa 'konektivitas antarruang hanya menguntungkan wilayah yang sudah maju'!" },
+        { id: 27, q: "Dalam kasus regional complementary, dua wilayah sepakat melakukan barter hasil produksi tanpa melibatkan uang. Berikan evaluasimu terhadap efektivitas cara tersebut dibandingkan perdagangan menggunakan uang!" },
+        { id: 28, q: "Evaluasilah efektivitas kebijakan pemerintah membangun jalan di wilayah perbatasan sebagai upaya mempercepat konektivitas dan kesejahteraan masyarakat setempat!" },
+        { id: 29, q: "Antara mempercepat pembangunan konektivitas transportasi di seluruh wilayah secara serentak atau membangun secara bertahap dengan prioritas wilayah tertinggal, pendekatan mana yang lebih tepat menurutmu? Berikan evaluasi dan alasannya!" },
+        { id: 30, q: "Kemajuan konektivitas antarruang mempermudah penyebaran inovasi teknologi, namun juga dapat mempercepat hilangnya kearifan lokal suatu daerah. Berikan evaluasimu terhadap fenomena ini beserta solusi yang tepat!" }
+    ];
+
+    // --- STATE MANAGEMENT ---
+    let groupData = {
+        name: "",
+        members: [],
+        balance: 0
+    };
+
+    let poolKesempatan = [];
+    let poolTantangan = [];
+    let selectedCardType = "";
+    let activeQuestion = null;
+    let timerInterval = null;
+    let timeLeft = 120; // 2 Menit
+
+    // TEMPELKAN URL APPS SCRIPT KAMU DI SINI
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzNkTkoM0Iu2e-tLJULIpAn_kXutgge8MJWhrF9YC7MFVJKN970JVFpoE-KgfB3cGB3qQ/exec"; 
+
+    // Helper: Shuffle Array
+    function shuffle(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    // Inisialisasi Pool Soal
+    function initQuestionPools() {
+        poolKesempatan = shuffle([...dataKesempatanPG]);
+        poolTantangan = shuffle([...dataTantanganEssai]);
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function startGame() {
+        const nameInput = document.getElementById('group-name').value.trim();
+        const membersInput = document.getElementById('member-names').value.trim();
+
+        if (!nameInput || !membersInput) {
+            alert("Harap isi nama kelompok dan daftar anggota terlebih dahulu!");
+            return;
+        }
+
+        groupData.name = nameInput;
+        groupData.members = membersInput.split(',').map(m => m.trim()).filter(m => m.length > 0);
+        groupData.balance = 0;
+
+        initQuestionPools();
+        updateDashboard();
+        showScreen('screen-dashboard');
+    }
+
+    function updateDashboard() {
+        document.getElementById('display-group-name').innerText = groupData.name;
+        document.getElementById('display-balance').innerText = `Rp ${groupData.balance}`;
+    }
+
+    function selectCardType(type) {
+        selectedCardType = type;
+        const selectElem = document.getElementById('select-player');
+        selectElem.innerHTML = "";
+
+        groupData.members.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m;
+            opt.innerText = m;
+            selectElem.appendChild(opt);
+        });
+
+        const badge = document.getElementById('badge-card-type');
+        badge.innerText = `Kartu ${type}`;
+        badge.style.backgroundColor = type === 'Kesempatan' ? '#F57F17' : '#BF360C';
+
+        showScreen('screen-select-player');
+    }
+
+    function openQuestion() {
+        showScreen('screen-question');
+        
+        const badge = document.getElementById('question-card-type');
+        badge.innerText = `Kartu ${selectedCardType}`;
+        badge.style.backgroundColor = selectedCardType === 'Kesempatan' ? '#F57F17' : '#BF360C';
+
+        if (selectedCardType === 'Kesempatan') {
+            document.getElementById('container-pg').style.display = 'block';
+            document.getElementById('container-essai').style.display = 'none';
+
+            if (poolKesempatan.length === 0) {
+                poolKesempatan = shuffle([...dataKesempatanPG]); // Re-shuffle jika habis
+            }
+            activeQuestion = poolKesempatan.pop();
+            renderPG(activeQuestion);
+
+        } else {
+            document.getElementById('container-pg').style.display = 'none';
+            document.getElementById('container-essai').style.display = 'block';
+            document.getElementById('essai-answer').value = "";
+
+            if (poolTantangan.length === 0) {
+                poolTantangan = shuffle([...dataTantanganEssai]); // Re-shuffle jika habis
+            }
+            activeQuestion = poolTantangan.pop();
+            renderEssai(activeQuestion);
+        }
+
+        startTimer();
+    }
+
+    function renderPG(qData) {
+        document.getElementById('question-text').innerText = qData.q;
+        const optionsContainer = document.getElementById('pg-options');
+        optionsContainer.innerHTML = "";
+
+        qData.options.forEach(opt => {
+            const letter = opt.substring(0, 1);
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <label>
+                    <input type="radio" name="pg-choice" value="${letter}">
+                    ${opt}
+                </label>
+            `;
+            optionsContainer.appendChild(li);
+        });
+    }
+
+    function renderEssai(qData) {
+        document.getElementById('question-text').innerText = qData.q;
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        timeLeft = 120;
+        updateTimerDisplay();
+
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay();
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert("Waktu habis! Jawaban dianggap salah dan tidak mendapatkan poin.");
+                submitAnswer(true);
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        document.getElementById('timer-display').innerText = 
+            `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function submitAnswer(isTimeout = false) {
+        clearInterval(timerInterval);
+
+        const currentPlayer = document.getElementById('select-player').value;
+        let answerText = "";
+        let status = "Salah";
+        let rewardAmount = 0;
+
+        if (selectedCardType === 'Kesempatan') {
+            const selectedOpt = document.querySelector('input[name="pg-choice"]:checked');
+            if (!selectedOpt && !isTimeout) {
+                alert("Pilih salah satu jawaban terlebih dahulu!");
+                startTimer();
+                return;
+            }
+            answerText = selectedOpt ? selectedOpt.value : "TIDAK MENJAWAB (WAKTU HABIS)";
+            
+            // PERBAIKAN LOGIKA: Hanya bertambah Rp 100 jika BENAR
+            if (selectedOpt && selectedOpt.value === activeQuestion.key) {
+                status = "Benar";
+                rewardAmount = 100;
+            } else {
+                status = selectedOpt ? "Salah" : "Waktu Habis";
+                rewardAmount = 0;
+            }
+        } else {
+            const textAns = document.getElementById('essai-answer').value.trim();
+            if (!textAns && !isTimeout) {
+                alert("Tuliskan jawaban essai terlebih dahulu!");
+                startTimer();
+                return;
+            }
+            
+            if (textAns) {
+                answerText = textAns;
+                status = "Menjawab Essai";
+                rewardAmount = 100; // Mengisi essai diberi reward Rp 100
+            } else {
+                answerText = "TIDAK MENJAWAB (WAKTU HABIS)";
+                status = "Waktu Habis";
+                rewardAmount = 0;
+            }
+        }
+
+        // Tambahkan reward jika ada
+        groupData.balance += rewardAmount;
+
+        // Payload Kirim Data ke Google Sheets
+        const payload = {
+            waktu: new Date().toLocaleString('id-ID'),
+            kelompok: groupData.name,
+            namaSiswa: currentPlayer,
+            tipeKartu: selectedCardType,
+            pertanyaan: activeQuestion.q,
+            jawaban: answerText,
+            status: status,
+            reward: `Rp ${rewardAmount}`
+        };
+
+        sendToSpreadsheet(payload);
+
+        if (rewardAmount > 0) {
+            alert(`Jawaban tercatat! [${status}] Kelompok kamu mendapatkan Rp ${rewardAmount}.`);
+        } else {
+            alert(`Jawaban tercatat! [${status}] Kamu tidak mendapatkan tambahan uang.`);
+        }
+
+        updateDashboard();
+        showScreen('screen-dashboard');
+    }
+
+    function sendToSpreadsheet(data) {
+        if (SCRIPT_URL === "PASTE_URL_WEB_APP_ANDA_DI_SINI") {
+            console.warn("URL Web App Apps Script belum dipasang. Data hanya diproses secara lokal.");
+            return;
+        }
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).catch(err => console.error("Gagal mengirim ke Sheets:", err));
+    }
+
+    function goToDashboard() {
+        clearInterval(timerInterval);
+        showScreen('screen-dashboard');
+    }
+
+    function resetGame() {
+        if (confirm("Apakah kamu yakin ingin menyelesaikan permainan? Semua data saldo kelompok akan kembali ke Rp 0.")) {
+            clearInterval(timerInterval);
+            document.getElementById('group-name').value = "";
+            document.getElementById('member-names').value = "";
+            groupData = { name: "", members: [], balance: 0 };
+            showScreen('screen-setup');
+        }
+    }
+</script>
+
+</body>
+</html>
